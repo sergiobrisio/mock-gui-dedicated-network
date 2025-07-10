@@ -134,23 +134,44 @@
 
   <script>
     async function handleRequest(method, endpoint, body = null) {
+      let baseUrl = '';
+  
+      if (endpoint.startsWith('/networks')) {
+        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network/vwip';
+      } else if (endpoint.startsWith('/networkAccesses')) {
+        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-accesses';
+      } else if (endpoint.startsWith('/networkprofiles')) {
+        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles';
+      } else {
+        document.getElementById('responseArea').textContent = 'Errore: endpoint non riconosciuto';
+        return;
+      }
+  
       try {
-        const response = await fetch('https://camara-dedicated-network.onrender.com/dedicated-network/vwip' + endpoint, {
+        const response = await fetch(baseUrl + endpoint, {
           method: method,
           headers: {
             'Content-Type': 'application/json'
           },
           body: method !== 'GET' && method !== 'HEAD' ? body : null
         });
-
-        const result = await response.json();
-        document.getElementById('responseArea').textContent = JSON.stringify(result, null, 2);
+  
+        const resultText = await response.text();
+  
+        // Prova a fare il parse come JSON, altrimenti mostra testo grezzo
+        try {
+          const resultJson = JSON.parse(resultText);
+          document.getElementById('responseArea').textContent = JSON.stringify(resultJson, null, 2);
+        } catch {
+          document.getElementById('responseArea').textContent = resultText;
+        }
+  
       } catch (err) {
         document.getElementById('responseArea').textContent = 'Errore nella richiesta: ' + err;
         console.error(err);
       }
     }
-  </script>
+  </script>  
 
 </body>
 </html>
