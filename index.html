@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Mock API Network & Access</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    button { margin: 5px; padding: 10px; font-size: 14px; }
+    pre { background: #f0f0f0; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Mock API Tester (Render.com)</h2>
+
+  <button onclick="sendPost('/dedicated-network/vwip/networks')">POST /networks</button>
+  <button onclick="sendDelete('/dedicated-network/vwip/networks/mock-network-id-123')">DELETE /networks/:id</button>
+  <br>
+  <button onclick="sendPost('/dedicated-network/vwip/network-accesses')">POST /network-accesses</button>
+  <button onclick="sendDelete('/dedicated-network/vwip/network-accesses/mock-access-id-123')">DELETE /network-accesses/:id</button>
+
+  <h3>Risposta:</h3>
+  <pre id="response">Push a button to start...</pre>
+
+  <script>
+    const baseUrl = "https://camara-dedicated-network.onrender.com";
+
+    async function sendPost(endpoint) {
+      try {
+        const res = await fetch(baseUrl + endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({}) // POST "vuota"
+        });
+
+        const data = await res.json();
+        document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById("response").textContent = "Errore nella POST: " + err;
+      }
+    }
+
+    async function sendDelete(endpoint) {
+      try {
+        const res = await fetch(baseUrl + endpoint, {
+          method: "DELETE"
+        });
+
+        const text = await res.text();
+        document.getElementById("response").textContent = text || "Cancellazione completata.";
+      } catch (err) {
+        document.getElementById("response").textContent = "Errore nella DELETE: " + err;
+      }
+    }
+  </script>
+</body>
+</html>
