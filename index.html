@@ -29,6 +29,23 @@
       background-color: #f9f9f9;
     }
 
+        /* Different colours for different sections */
+    section.profiles {
+    background-color: #e6f0ff; /* light blue */
+    border-left: 4px solid #3399ff;
+    }
+
+    section.networks {
+    background-color: #e6ffe6; /* light green */
+    border-left: 4px solid #33cc33;
+    }
+
+    section.accesses {
+    background-color: #fffbe6; /* light yellow */
+    border-left: 4px solid #ffcc00;
+    }
+
+
     h2, h4 {
       margin: 4px 0;
     }
@@ -71,7 +88,7 @@
   <div class="left">
 
     <!-- Network Profiles -->
-    <section>
+    <section class="profiles">
       <h2>Network Profiles</h2>
       <div class="input-group">
         <button onclick="handleRequest('GET', '/profiles')">GET /networkprofiles</button>
@@ -83,7 +100,7 @@
     </section>
 
     <!-- Networks -->
-    <section>
+    <section class="networks">
       <h2>Networks</h2>
       <div class="input-group">
         <button onclick="handleRequest('GET', '/networks')">GET /networks</button>
@@ -104,7 +121,7 @@
     </section>
 
     <!-- Network Accesses -->
-    <section>
+    <section class="accesses">
       <h2>Network Accesses</h2>
       <div class="input-group">
         <button onclick="handleRequest('GET', '/accesses')">GET /networkAccesses</button>
