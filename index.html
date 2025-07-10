@@ -143,14 +143,15 @@
   
       if (endpoint.startsWith('/networks')) {
         baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network/vwip';
-      } else if (endpoint.startsWith('/networkAccesses')) {
-        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-accesses/wwip';
-      } else if (endpoint.startsWith('/networkprofiles')) {
-        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles/vwip';
-      } else {
-        document.getElementById('responseArea').textContent = 'Error: Unknown endpoint';
-        return;
-      }
+        } else if (endpoint.startsWith('/accesses')) {
+        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-accesses/vwip';
+            } else if (endpoint.startsWith('/profiles')) {
+            baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles/vwip';
+                } else {
+                document.getElementById('responseArea').textContent = 'Error: Unknown endpoint';
+                return;
+        }
+
   
       const fullUrl = baseUrl + endpoint;
   
