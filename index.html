@@ -74,11 +74,11 @@
     <section>
       <h2>Network Profiles</h2>
       <div class="input-group">
-        <button onclick="handleRequest('GET', '/networkprofiles')">GET /networkprofiles</button>
+        <button onclick="handleRequest('GET', '/profiles')">GET /networkprofiles</button>
       </div>
       <div class="input-group">
         <label>ID: <input type="text" id="profileId"></label>
-        <button onclick="handleRequest('GET', '/networkprofiles/' + profileId.value)">GET /networkprofiles/{id}</button>
+        <button onclick="handleRequest('GET', '/profiles/' + profileId.value)">GET /networkprofiles/{id}</button>
       </div>
     </section>
 
@@ -107,20 +107,20 @@
     <section>
       <h2>Network Accesses</h2>
       <div class="input-group">
-        <button onclick="handleRequest('GET', '/networkAccesses')">GET /networkAccesses</button>
+        <button onclick="handleRequest('GET', '/accesses')">GET /networkAccesses</button>
       </div>
       <div class="input-group">
         <label>ID: <input type="text" id="accessId"></label>
-        <button onclick="handleRequest('GET', '/networkAccesses/' + accessId.value)">GET /networkAccesses/{id}</button>
+        <button onclick="handleRequest('GET', '/accesses/' + accessId.value)">GET /networkAccesses/{id}</button>
       </div>
       <div class="input-group">
         <label>Delete ID: <input type="text" id="accessIdDelete"></label>
-        <button onclick="handleRequest('DELETE', '/networkAccesses/' + accessIdDelete.value)">DELETE /networkAccesses/{id}</button>
+        <button onclick="handleRequest('DELETE', '/accesses/' + accessIdDelete.value)">DELETE /networkAccesses/{id}</button>
       </div>
       <div class="input-group">
         <h4>POST /networkAccesses</h4>
         <textarea id="postAccessBody">{}</textarea><br>
-        <button onclick="handleRequest('POST', '/networkAccesses', postAccessBody.value)">Invia POST</button>
+        <button onclick="handleRequest('POST', '/accesses', postAccessBody.value)">Invia POST</button>
       </div>
     </section>
 
@@ -144,9 +144,9 @@
       if (endpoint.startsWith('/networks')) {
         baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network/vwip';
       } else if (endpoint.startsWith('/networkAccesses')) {
-        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-accesses';
+        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-accesses/wwip';
       } else if (endpoint.startsWith('/networkprofiles')) {
-        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles';
+        baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles/vwip';
       } else {
         document.getElementById('responseArea').textContent = 'Error: Unknown endpoint';
         return;
