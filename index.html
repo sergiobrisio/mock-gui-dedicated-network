@@ -2,128 +2,152 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Mock GUI – Network Manager</title>
+  <title>Network Manager UI</title>
   <style>
     body {
       font-family: sans-serif;
-      margin: 20px;
+      margin: 10px;
+      display: flex;
     }
+
+    /* Layout: 2 colonne */
+    .left, .right {
+      width: 50%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .left {
+      border-right: 1px solid #ccc;
+    }
+
     section {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
       background-color: #f9f9f9;
     }
-    h2 {
-      margin-top: 0;
+
+    h2, h4 {
+      margin: 4px 0;
     }
+
     .input-group {
-      margin: 10px 0;
+      margin: 6px 0;
     }
+
     input[type="text"] {
-      padding: 6px;
-      width: 300px;
+      padding: 4px;
+      width: 250px;
     }
-    button {
-      padding: 6px 12px;
-      margin-left: 10px;
-    }
+
     textarea {
       width: 100%;
-      height: 150px;
-      margin-top: 10px;
+      height: 60px;
       font-family: monospace;
+      font-size: 12px;
+    }
+
+    button {
+      padding: 4px 8px;
+      margin-left: 5px;
+    }
+
+    #responseArea {
+      white-space: pre-wrap;
+      background-color: #eef;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      height: 95vh;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
 
-  <!-- SECTION 1 – Network Profiles -->
-  <section>
-    <h2>1. Network Profiles</h2>
+  <!-- COLONNA SINISTRA -->
+  <div class="left">
 
-    <div class="input-group">
-      <button onclick="handleRequest('GET', '/networkprofiles')">GET /networkprofiles</button>
-    </div>
+    <!-- Network Profiles -->
+    <section>
+      <h2>Network Profiles</h2>
+      <div class="input-group">
+        <button onclick="handleRequest('GET', '/networkprofiles')">GET /networkprofiles</button>
+      </div>
+      <div class="input-group">
+        <label>ID: <input type="text" id="profileId"></label>
+        <button onclick="handleRequest('GET', '/networkprofiles/' + profileId.value)">GET /networkprofiles/{id}</button>
+      </div>
+    </section>
 
-    <div class="input-group">
-      <label>Profile ID:</label>
-      <input type="text" id="profileId">
-      <button onclick="handleRequest('GET', '/networkprofiles/' + document.getElementById('profileId').value)">GET /networkprofiles/{id}</button>
-    </div>
-  </section>
+    <!-- Networks -->
+    <section>
+      <h2>Networks</h2>
+      <div class="input-group">
+        <button onclick="handleRequest('GET', '/networks')">GET /networks</button>
+      </div>
+      <div class="input-group">
+        <label>ID: <input type="text" id="networkId"></label>
+        <button onclick="handleRequest('GET', '/networks/' + networkId.value)">GET /networks/{id}</button>
+      </div>
+      <div class="input-group">
+        <label>Delete ID: <input type="text" id="networkIdDelete"></label>
+        <button onclick="handleRequest('DELETE', '/networks/' + networkIdDelete.value)">DELETE /networks/{id}</button>
+      </div>
+      <div class="input-group">
+        <h4>POST /networks</h4>
+        <textarea id="postNetworkBody">{}</textarea><br>
+        <button onclick="handleRequest('POST', '/networks', postNetworkBody.value)">Invia POST</button>
+      </div>
+    </section>
 
-  <!-- SECTION 2 – Networks -->
-  <section>
-    <h2>2. Networks</h2>
+    <!-- Network Accesses -->
+    <section>
+      <h2>Network Accesses</h2>
+      <div class="input-group">
+        <button onclick="handleRequest('GET', '/networkAccesses')">GET /networkAccesses</button>
+      </div>
+      <div class="input-group">
+        <label>ID: <input type="text" id="accessId"></label>
+        <button onclick="handleRequest('GET', '/networkAccesses/' + accessId.value)">GET /networkAccesses/{id}</button>
+      </div>
+      <div class="input-group">
+        <label>Delete ID: <input type="text" id="accessIdDelete"></label>
+        <button onclick="handleRequest('DELETE', '/networkAccesses/' + accessIdDelete.value)">DELETE /networkAccesses/{id}</button>
+      </div>
+      <div class="input-group">
+        <h4>POST /networkAccesses</h4>
+        <textarea id="postAccessBody">{}</textarea><br>
+        <button onclick="handleRequest('POST', '/networkAccesses', postAccessBody.value)">Invia POST</button>
+      </div>
+    </section>
 
-    <div class="input-group">
-      <button onclick="handleRequest('GET', '/networks')">GET /networks</button>
-    </div>
+  </div>
 
-    <div class="input-group">
-      <label>Network ID:</label>
-      <input type="text" id="networkId">
-      <button onclick="handleRequest('GET', '/networks/' + document.getElementById('networkId').value)">GET /networks/{id}</button>
-    </div>
-
-    <div class="input-group">
-      <label>Delete Network ID:</label>
-      <input type="text" id="networkIdDelete">
-      <button onclick="handleRequest('DELETE', '/networks/' + document.getElementById('networkIdDelete').value)">DELETE /networks/{id}</button>
-    </div>
-
-    <div class="input-group">
-      <h4>POST /networks</h4>
-      <p><i>Compila il body qui sotto (verrà completato nel secondo step)</i></p>
-      <textarea id="postNetworkBody">{}</textarea><br>
-      <button onclick="handleRequest('POST', '/networks', document.getElementById('postNetworkBody').value)">Invia POST</button>
-    </div>
-  </section>
-
-  <!-- SECTION 3 – Network Accesses -->
-  <section>
-    <h2>3. Network Accesses</h2>
-
-    <div class="input-group">
-      <button onclick="handleRequest('GET', '/networkAccesses')">GET /networkAccesses</button>
-    </div>
-
-    <div class="input-group">
-      <label>Access ID:</label>
-      <input type="text" id="accessId">
-      <button onclick="handleRequest('GET', '/networkAccesses/' + document.getElementById('accessId').value)">GET /networkAccesses/{id}</button>
-    </div>
-
-    <div class="input-group">
-      <label>Delete Access ID:</label>
-      <input type="text" id="accessIdDelete">
-      <button onclick="handleRequest('DELETE', '/networkAccesses/' + document.getElementById('accessIdDelete').value)">DELETE /networkAccesses/{id}</button>
-    </div>
-  </section>
-
-  <!-- Response Section -->
-  <section>
+  <!-- COLONNA DESTRA -->
+  <div class="right">
     <h2>Risposta server</h2>
-    <pre id="responseArea">Clicca un'azione per vedere la risposta qui.</pre>
-  </section>
+    <div id="responseArea">Clicca un’azione per vedere la risposta qui.</div>
+  </div>
 
   <script>
     async function handleRequest(method, endpoint, body = null) {
       try {
-        const res = await fetch('https://camara-dedicated-network.onrender.com/dedicated-network/vwip' + endpoint, {
+        const response = await fetch('https://camara-dedicated-network.onrender.com/dedicated-network/vwip' + endpoint, {
           method: method,
           headers: {
             'Content-Type': 'application/json'
           },
-          body: body && method !== 'GET' ? body : null
+          body: method !== 'GET' && method !== 'HEAD' ? body : null
         });
 
-        const result = await res.json();
+        const result = await response.json();
         document.getElementById('responseArea').textContent = JSON.stringify(result, null, 2);
       } catch (err) {
-        document.getElementById('responseArea').textContent = 'Errore nella chiamata: ' + err;
+        document.getElementById('responseArea').textContent = 'Errore nella richiesta: ' + err;
+        console.error(err);
       }
     }
   </script>
