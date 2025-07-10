@@ -127,11 +127,16 @@
   </div>
 
   <!-- COLONNA DESTRA -->
-  <div class="right">
-    <h2>Risposta server</h2>
-    <div id="responseArea">Clicca un’azione per vedere la risposta qui.</div>
+  <div style="flex: 1; padding-left: 20px; border-left: 1px solid #ccc; max-height: 95vh; overflow-y: auto;">
+    <h3>Last Request</h3>
+    <pre id="requestLog" style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; max-height: 100px; overflow-y: auto;"></pre>
+  
+    <h3>Server Response</h3>
+    <div id="responseScroll" style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; height: 500px; overflow-y: auto;">
+      <pre id="responseArea" style="margin: 0;"></pre>
+    </div>
   </div>
-
+  
   <script>
     async function handleRequest(method, endpoint, body = null) {
       let baseUrl = '';
@@ -143,12 +148,18 @@
       } else if (endpoint.startsWith('/networkprofiles')) {
         baseUrl = 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles';
       } else {
-        document.getElementById('responseArea').textContent = 'Errore: endpoint non riconosciuto';
+        document.getElementById('responseArea').textContent = 'Error: Unknown endpoint';
         return;
       }
   
+      const fullUrl = baseUrl + endpoint;
+  
+      // Mostra la richiesta effettuata
+      const requestLog = document.getElementById('requestLog');
+      requestLog.textContent = `${method} ${fullUrl}\n\n${body ? body : ''}`;
+  
       try {
-        const response = await fetch(baseUrl + endpoint, {
+        const response = await fetch(fullUrl, {
           method: method,
           headers: {
             'Content-Type': 'application/json'
@@ -158,7 +169,6 @@
   
         const resultText = await response.text();
   
-        // Prova a fare il parse come JSON, altrimenti mostra testo grezzo
         try {
           const resultJson = JSON.parse(resultText);
           document.getElementById('responseArea').textContent = JSON.stringify(resultJson, null, 2);
@@ -167,11 +177,11 @@
         }
   
       } catch (err) {
-        document.getElementById('responseArea').textContent = 'Errore nella richiesta: ' + err;
+        document.getElementById('responseArea').textContent = 'Request error: ' + err;
         console.error(err);
       }
     }
-  </script>  
+  </script>
 
 </body>
 </html>
