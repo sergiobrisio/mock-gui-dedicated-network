@@ -2,57 +2,131 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Mock API Network & Access</title>
+  <title>Mock GUI – Network Manager</title>
   <style>
-    body { font-family: sans-serif; padding: 1em; }
-    button { margin: 5px; padding: 10px; font-size: 14px; }
-    pre { background: #f0f0f0; padding: 10px; }
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    section {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .input-group {
+      margin: 10px 0;
+    }
+    input[type="text"] {
+      padding: 6px;
+      width: 300px;
+    }
+    button {
+      padding: 6px 12px;
+      margin-left: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+      font-family: monospace;
+    }
   </style>
 </head>
 <body>
-  <h2>Mock API Tester (Render.com)</h2>
 
-  <button onclick="sendPost('/dedicated-network/vwip/networks')">POST /networks</button>
-  <button onclick="sendDelete('/dedicated-network/vwip/networks/mock-network-id-123')">DELETE /networks/:id</button>
-  <br>
-  <button onclick="sendPost('/dedicated-network/vwip/network-accesses')">POST /network-accesses</button>
-  <button onclick="sendDelete('/dedicated-network/vwip/network-accesses/mock-access-id-123')">DELETE /network-accesses/:id</button>
+  <!-- SECTION 1 – Network Profiles -->
+  <section>
+    <h2>1. Network Profiles</h2>
 
-  <h3>Risposta:</h3>
-  <pre id="response">Push a button to start...</pre>
+    <div class="input-group">
+      <button onclick="handleRequest('GET', '/networkprofiles')">GET /networkprofiles</button>
+    </div>
+
+    <div class="input-group">
+      <label>Profile ID:</label>
+      <input type="text" id="profileId">
+      <button onclick="handleRequest('GET', '/networkprofiles/' + document.getElementById('profileId').value)">GET /networkprofiles/{id}</button>
+    </div>
+  </section>
+
+  <!-- SECTION 2 – Networks -->
+  <section>
+    <h2>2. Networks</h2>
+
+    <div class="input-group">
+      <button onclick="handleRequest('GET', '/networks')">GET /networks</button>
+    </div>
+
+    <div class="input-group">
+      <label>Network ID:</label>
+      <input type="text" id="networkId">
+      <button onclick="handleRequest('GET', '/networks/' + document.getElementById('networkId').value)">GET /networks/{id}</button>
+    </div>
+
+    <div class="input-group">
+      <label>Delete Network ID:</label>
+      <input type="text" id="networkIdDelete">
+      <button onclick="handleRequest('DELETE', '/networks/' + document.getElementById('networkIdDelete').value)">DELETE /networks/{id}</button>
+    </div>
+
+    <div class="input-group">
+      <h4>POST /networks</h4>
+      <p><i>Compila il body qui sotto (verrà completato nel secondo step)</i></p>
+      <textarea id="postNetworkBody">{}</textarea><br>
+      <button onclick="handleRequest('POST', '/networks', document.getElementById('postNetworkBody').value)">Invia POST</button>
+    </div>
+  </section>
+
+  <!-- SECTION 3 – Network Accesses -->
+  <section>
+    <h2>3. Network Accesses</h2>
+
+    <div class="input-group">
+      <button onclick="handleRequest('GET', '/networkAccesses')">GET /networkAccesses</button>
+    </div>
+
+    <div class="input-group">
+      <label>Access ID:</label>
+      <input type="text" id="accessId">
+      <button onclick="handleRequest('GET', '/networkAccesses/' + document.getElementById('accessId').value)">GET /networkAccesses/{id}</button>
+    </div>
+
+    <div class="input-group">
+      <label>Delete Access ID:</label>
+      <input type="text" id="accessIdDelete">
+      <button onclick="handleRequest('DELETE', '/networkAccesses/' + document.getElementById('accessIdDelete').value)">DELETE /networkAccesses/{id}</button>
+    </div>
+  </section>
+
+  <!-- Response Section -->
+  <section>
+    <h2>Risposta server</h2>
+    <pre id="responseArea">Clicca un'azione per vedere la risposta qui.</pre>
+  </section>
 
   <script>
-    const baseUrl = "https://camara-dedicated-network.onrender.com";
-
-    async function sendPost(endpoint) {
+    async function handleRequest(method, endpoint, body = null) {
       try {
-        const res = await fetch(baseUrl + endpoint, {
-          method: "POST",
+        const res = await fetch('https://camara-dedicated-network.onrender.com/dedicated-network/vwip' + endpoint, {
+          method: method,
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({}) // POST "vuota"
+          body: body && method !== 'GET' ? body : null
         });
 
-        const data = await res.json();
-        document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+        const result = await res.json();
+        document.getElementById('responseArea').textContent = JSON.stringify(result, null, 2);
       } catch (err) {
-        document.getElementById("response").textContent = "Errore nella POST: " + err;
-      }
-    }
-
-    async function sendDelete(endpoint) {
-      try {
-        const res = await fetch(baseUrl + endpoint, {
-          method: "DELETE"
-        });
-
-        const text = await res.text();
-        document.getElementById("response").textContent = text || "Cancellazione completata.";
-      } catch (err) {
-        document.getElementById("response").textContent = "Errore nella DELETE: " + err;
+        document.getElementById('responseArea').textContent = 'Errore nella chiamata: ' + err;
       }
     }
   </script>
+
 </body>
 </html>
