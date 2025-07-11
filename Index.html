@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dedicated Network API – Business Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* ====== GLOBAL LAYOUT ====== */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background:#f4f4f4;
+      padding:10px;
+      border-bottom:1px solid #ccc;
+      text-align:center;
+    }
+
+    /* ====== TOP BLOCK (3 COLUMNS) ====== */
+    #top-block{
+      display:flex;
+      flex-wrap:wrap;
+      background:#eef3f8;
+      border-bottom:1px solid #ccc;
+    }
+    #business-value,#scenario-selection,#scenario-image{
+      padding:20px;
+      box-sizing:border-box;
+    }
+    /* column widths on desktop */
+    @media(min-width:768px){
+      #business-value{flex:0 0 35%;border-right:1px solid #ddd;}
+      #scenario-selection{flex:0 0 25%;border-right:1px solid #ddd;}
+      #scenario-image{flex:1;}
+    }
+    /* full‑width on mobile */
+    @media(max-width:767px){
+      #business-value,#scenario-selection,#scenario-image{flex:1 1 100%;border-right:none;border-bottom:1px solid #ddd;}
+    }
+
+    /* ====== BUSINESS VALUE ====== */
+    #business-value h2{margin:0 0 10px;font-size:18px;}
+    #business-value ul{margin:10px 0;padding-left:20px;font-size:14px;}
+    #business-value ul li{margin:4px 0;}
+
+    /* ====== SCENARIO SELECTION ====== */
+    .scenario-tabs{display:flex;flex-direction:column;gap:10px;width:100%;}
+    .scenario-tabs button{background:none;border:1px solid #007acc;padding:10px;border-radius:4px;font-size:14px;cursor:pointer;transition:background .2s;width:100%;}
+    .scenario-tabs button.active{background:#007acc;color:#fff;}
+    #scenario-subtitle{margin-top:15px;font-size:14px;text-align:center;color:#333;}
+
+    /* ====== IMAGE COLUMN ====== */
+    #scenario-image{display:flex;align-items:center;justify-content:center;background:#fff;}
+    #scenario-svg-container{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    #scenario-svg-container object{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block;}
+    .image-placeholder{width:80%;height:120px;background:#ddd;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#666;}
+
+    /* ====== MERMAID SECTION ====== */
+    #mermaid-container {
+        grid-column: 1 / span 3;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        overflow: auto;
+    }
+    #mermaid-diagram {
+    width: 100%;
+    max-width: 1000px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dedicated Network API – Business Demo</h1>
+  </header>
+
+  <div id="top-block">
+    <!-- Column 1 : Business Value -->
+    <section id="business-value">
+      <h2>Why Dedicated Networks?</h2>
+      <ul>
+        <li><strong>Guaranteed Performance:</strong> dedicated bandwidth & QoS per device.</li>
+        <li><strong>On‑Demand Provisioning:</strong> REST APIs to spin up networks in seconds.</li>
+        <li><strong>Geographic Flexibility:</strong> configure service area/time for events or sites.</li>
+        <li><strong>Security & Isolation:</strong> traffic separated from public networks, SLA‑backed.</li>
+      </ul>
+      <p style="font-size:14px;">Explore the usage scenarios:</p>
+    </section>
+
+    <!-- Column 2 : Scenario selector + subtitle -->
+    <div id="scenario-selection">
+      <div class="scenario-tabs">
+        <button data-scenario="media" class="active">Media Production</button>
+        <button data-scenario="festival">Festival</button>
+        <button data-scenario="enterprise">Enterprise</button>
+      </div>
+      <div id="scenario-subtitle">Stable connectivity for multiple video crews; only live camera streams get high QoS, others remain on standby.</div>
+    </div>
+
+    <!-- Column 3 : SVG / Image -->
+    <div id="scenario-image">
+      <div id="scenario-svg-container" class="image-placeholder">Image Placeholder</div>
+    </div>
+  </div>
+
+  <!-- Mermaid diagram -->
+  <div id="mermaid-container">
+    <div class="mermaid" id="mermaid-diagram"></div>
+  </div>
+
+  <script>
+    /* ========= DATA ========= */
+    const scenarios = {
+      media:{
+        subtitle:'Stable connectivity for multiple video crews; only live camera streams get high QoS, others remain on standby.',
+        svg:'Scenario_MediaProduction.svg',
+        diagram:`sequenceDiagram
+  participant User as Business User 👤
+  participant API as Networks API 🔗
+  participant Backend as Telco Backend ⚙️
+  User->>API: GET /networks?scenario=media
+  API-->>Backend: Request network for media production
+  Backend-->>API: Network created
+  API-->>User: 200 OK`},
+      festival:{
+        subtitle:'Dedicated network for payment systems and CCTV, with QoS profiles optimized for matrix vs single view.',
+        svg:null,
+        diagram:`sequenceDiagram
+  participant User as Business User 👤
+  participant API as Networks API 🔗
+  participant Backend as Telco Backend ⚙️
+  User->>API: GET /networks?scenario=festival
+  API-->>Backend: Request network for festival
+  Backend-->>API: Network created
+  API-->>User: 200 OK`},
+      enterprise:{
+        subtitle:'Secure access to corporate services, adaptive QoS for video conferencing.',
+        svg:null,
+        diagram:`sequenceDiagram
+  participant User as Business User 👤
+  participant API as Networks API 🔗
+  participant Backend as Telco Backend ⚙️
+  User->>API: GET /networks?scenario=enterprise
+  API-->>Backend: Request network for enterprise
+  Backend-->>API: Created network with adaptive QoS
+  API-->>User: 200 OK`}
+    };
+
+    /* ========= MERMAID INIT ========= */
+    mermaid.initialize({startOnLoad:false});
+    const diagramDiv=document.getElementById('mermaid-diagram');
+    function renderMermaid(md){
+      diagramDiv.removeAttribute('data-processed');
+      diagramDiv.textContent=md;
+      mermaid.init(undefined,diagramDiv);
+    }
+
+    /* ========= IMAGE HANDLER ========= */
+    const imgContainer=document.getElementById('scenario-svg-container');
+    function loadSVG(path){
+      const obj=document.createElement('object');
+      obj.type='image/svg+xml';
+      obj.data=path;
+      obj.style.width='100%';
+      obj.style.height='100%';
+      obj.style.objectFit='contain';
+      return obj;
+    }
+    function updateImage(s){
+      imgContainer.innerHTML='';
+      if(s.svg){imgContainer.appendChild(loadSVG(s.svg));}
+      else{
+        const ph=document.createElement('div');
+        ph.className='image-placeholder';
+        ph.textContent='Image Placeholder';
+        imgContainer.appendChild(ph);
+      }
+    }
+
+    /* ========= BUTTON LOGIC ========= */
+    document.querySelectorAll('.scenario-tabs button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.scenario-tabs button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const key=btn.dataset.scenario;
+        const s=scenarios[key];
+        document.getElementById('scenario-subtitle').textContent=s.subtitle;
+        renderMermaid(s.diagram);
+        updateImage(s);
+      });
+    });
+
+    /* ========= INITIAL RENDER ========= */
+    renderMermaid(scenarios.media.diagram);
+    updateImage(scenarios.media);
+  </script>
+<!-- ====== NEXT PAGE BUTTON ====== -->
+<div style="display: flex; justify-content: center; padding: 20px; background: #f4f4f4; border-top: 1px solid #ccc;">
+  <a href="Tech_Page.html" style="
+    background-color: #007acc;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #007acc;
+    transition: background 0.3s;
+  " onmouseover="this.style.backgroundColor='#005f99'" onmouseout="this.style.backgroundColor='#007acc'">
+    Go to the next page to see the API way of working
+  </a>
+</div>
+</body>
+</html>

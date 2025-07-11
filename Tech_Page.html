@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Dedicated Network API - Business Demo</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      grid-template-columns: 20% 30% 50%;
+      height: 100vh;
+    }
+    header {
+      grid-column: 1 / span 3;
+      background: #f4f4f4;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+    }
+    #mermaid-container {
+        grid-column: 1 / span 3;
+        padding: 20px;
+        background: #fff;  
+        display: flex;
+        justify-content: center; 
+    }
+    #mermaid-diagram {
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      height: 380px;
+      overflow: auto;
+    }
+    .sidebar, .center, .main {
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .sidebar {
+      border-right: 1px solid #ddd;
+    }
+    .center {
+      border-right: 1px solid #ddd;
+    }
+    h2, h3 {
+      margin-top: 0;
+    }
+    
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .button-group button {
+      width: 100%;
+      min-width: 220px;
+      max-width: 100%;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.2s ease;
+    }
+    .button-group button.active {
+      background: #005fa3;
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    button.api-trigger {
+      padding: 6px 12px;
+      margin-top: 5px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    section {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
+
+    /* Colori coerenti con i pulsanti */
+    section.profiles {
+      background-color: #d2a6e3; /* viola chiarissimo */
+      border-left: 4px solid #9B59B6;
+    }
+
+    section.networks {
+      background-color: #779cb3; /* blu chiarissimo */
+      border-left: 4px solid #3498DB;
+    }
+
+    section.create-network {
+      background-color: #82b9da; /* azzurro chiarissimo */
+      border-left: 4px solid #5DADE2;
+    }
+
+    section.accesses {
+      background-color: #8bbb9a; /* verde chiarissimo */
+      border-left: 4px solid #27AE60;
+    }
+
+    #detail-panel.profiles {
+      background-color: #d2a6e3;
+      border-left: 4px solid #9B59B6;
+    }
+
+    #detail-panel.networks {
+      background-color: #779cb3;
+      border-left: 4px solid #3498DB;
+    }
+
+    #detail-panel.create-network {
+      background-color: #82b9da;
+      border-left: 4px solid #5DADE2;
+    }
+
+    #detail-panel.accesses {
+      background-color: #8bbb9a;
+      border-left: 4px solid #27AE60;
+    }
+
+    #detail-panel.create-access {
+    background-color: #8bbb9a;
+    border-left: 4px solid #27AE60;
+    }
+
+  </style>
+<style>
+#selectProfileBtn { 
+  background-color: #9B59B6; 
+  color: white; 
+  border: none; 
+  padding: 10px; 
+  margin: 5px; 
+  cursor: pointer; 
+}
+#selectProfileBtn.active { 
+  background-color: #884EA0 !important; 
+}
+#viewNetworksBtn { 
+  background-color: #3498DB; 
+  color: white; 
+  border: none; 
+  padding: 10px; 
+  margin: 5px; 
+  cursor: pointer; 
+}
+#viewNetworksBtn.active { 
+  background-color: #2E86C1 !important; 
+}
+#createNetworkBtn { 
+  background-color: #5DADE2; 
+  color: white; 
+  border: none; 
+  padding: 10px; 
+  margin: 5px; 
+  cursor: pointer; 
+}
+#createNetworkBtn.active { 
+  background-color: #5499C7 !important;  
+}
+/*#viewDeviceAccessBtn { background-color: #27AE60; color: white; border: none; padding: 10px; margin: 5px; cursor: pointer; }
+#viewDeviceAccessBtn.active { background-color: #229954 !important;  }*/
+#createAccessBtn {
+  background-color: #27AE60;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+#createAccessBtn.active {
+  background-color: #229954 !important;
+}
+
+#viewAccessBtn {
+  background-color: #067d37;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+#viewAccessBtn.active {
+  background-color: #0a4824 !important;
+}
+</style></head>
+<body>
+<header>
+<h1>Dedicated Network API Use Cases</h1>
+</header>
+<div id="mermaid-container">
+<div class="mermaid" id="mermaid-diagram">
+    %% In this section, we will show the sequence diagrams for different use cases
+    %% Please select a use case to show the diagram
+</div>
+</div>
+<div class="sidebar">
+<h2>Use Case</h2>
+
+<div class="button-group" id="macro-cases">
+<button id="selectProfileBtn" data-case="select-profile">Select Profile</button>
+<button id="viewNetworksBtn" data-case="select-network">View Networks</button>
+<button id="createNetworkBtn" data-case="create-network">Create Network</button>
+<button id="viewAccessBtn" data-case="view-access">View Device Access</button>
+<button id="createAccessBtn" data-case="create-access">Create Device Access</button>
+</div>
+</div>
+</div>
+<div class="center">
+<h2>API Actions</h2>
+<div id="detail-panel">
+<p>Please select a use case from the left.</p>
+</div>
+</div>
+
+<div class="main">
+<h2>Last Request</h2>
+<pre id="requestLog"></pre>
+<h2>Server Response</h2>
+<pre id="responseLog"></pre>
+</div>
+<script>
+    mermaid.initialize({ startOnLoad: false });
+
+    const macroButtons = document.querySelectorAll('#macro-cases button');
+    const diagramDiv = document.getElementById('mermaid-diagram');
+    const detailPanel = document.getElementById('detail-panel');
+
+    const useCaseConfig = {
+      'select-profile': {
+        diagram: `sequenceDiagram
+  %%participant Device as Device 🖥️
+  participant BusinessUser as Business User 👤
+  participant API as Profiles API 🔗
+  participant TelcoBackend as Telco Backend ⚙️
+  %%Device->>BusinessUser: Request profiles
+  TelcoBackend -->> API: Update on all available profiles
+  BusinessUser->>API: GET /networkprofiles
+  API-->>BusinessUser: 200 OK
+  BusinessUser->>API: GET /networkprofiles/{Id}
+  API-->>BusinessUser: 200 OK`,
+        html: `<section><h3>Get All Profiles</h3><div class="input-group"><button class="api-trigger" onclick="doRequest('GET','/profiles')">GET /networkprofiles</button></div></section><section><h3>Get Profile by ID</h3><div class="input-group"><label>ID:</label><input type="text" id="profileId"><button class="api-trigger" onclick="doRequest('GET','/profiles/'+document.getElementById('profileId').value)">GET /networkprofiles/{id}</button></div></section>`
+      },
+      'select-network': {
+        diagram: `sequenceDiagram
+  participant BusinessUser as Business User 👤
+  participant API as Networks API 🔗
+  participant TelcoBackend as Telco Backend ⚙️
+  TelcoBackend -->> API: Update on all available networks
+  BusinessUser->>API: GET /networks
+  API-->>BusinessUser: 200 OK
+  BusinessUser->>API: GET /network/{Id}
+  API-->>BusinessUser: 200 OK`,
+        html: `<section><h3>List Networks</h3><div class="input-group"><button class="api-trigger" onclick="doRequest('GET','/networks')">GET /networks</button></div></section><section><h3>Get Network by ID</h3><div class="input-group"><label>ID:</label><input type="text" id="networkId"><button class="api-trigger" onclick="doRequest('GET','/networks/'+document.getElementById('networkId').value)">GET /networks/{id}</button></div></section>`
+      },
+      'create-network': {
+        diagram: `sequenceDiagram
+  participant BusinessUser as Business User 👤
+  participant API as Networks API 🔗
+  participant TelcoBackend as Telco Backend ⚙️
+  BusinessUser->>API: POST /networks
+  API-->>TelcoBackend: Create new network
+  TelcoBackend-->>API: Network created
+  API-->>BusinessUser: 201 Created`,
+        html: `<section><h3>Create New Network</h3><div class="input-group"><textarea id="createNetworkBody">{}</textarea><button class="api-trigger" onclick="doRequest('POST','/networks', document.getElementById('createNetworkBody').value)">POST /networks</button></div></section>`
+      },
+      'view-access': {
+        diagram: `sequenceDiagram
+  participant BusinessUser as Business User 👤
+  participant API as Access API 🔗
+  participant TelcoBackend as Telco Backend ⚙️
+  BusinessUser->>API: GET /accesses
+  API-->>BusinessUser: 200 OK`,
+        html: `<section><h3>List Accesses</h3><div class="input-group"><button class="api-trigger" onclick="doRequest('GET','/accesses')">GET /networkAccesses</button></div></section><section><h3>Get Access by ID</h3><div class="input-group"><label>ID:</label><input type="text" id="accessId"><button class="api-trigger" onclick="doRequest('GET','/networksAccess/{Id}'+document.getElementById('accessId').value)">GET /networkAccess/{id}</button></div></section>`
+      },
+      'create-access': {
+        diagram: `sequenceDiagram
+  participant BusinessUser as Business User 👤
+  participant API as Access API 🔗
+  participant TelcoBackend as Telco Backend ⚙️
+  BusinessUser->>API: POST /accesses
+  API-->>TelcoBackend: Create new access
+  TelcoBackend-->>API: Access created
+  API-->>BusinessUser: 200 OK`,
+        html: `<section><h3>Create Access</h3><div class="input-group"><textarea id="createAccessBody">{}</textarea><button class="api-trigger" onclick="doRequest('POST','/accesses', document.getElementById('createAccessBody').value)">POST /networkAccesses</button></div></section>`
+      }
+    };
+
+    function updateMermaid(content) {
+      diagramDiv.removeAttribute('data-processed');
+      diagramDiv.textContent = content;
+      mermaid.init(undefined, diagramDiv);
+    }
+
+    macroButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            macroButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const key = btn.dataset.case;
+            if (useCaseConfig[key]) {
+            updateMermaid(useCaseConfig[key].diagram);
+            detailPanel.innerHTML = useCaseConfig[key].html;
+
+            // 🔧 aggiorna la classe sul pannello centrale
+            detailPanel.classList.remove("profiles", "networks", "create-network", "accesses", "create-access");
+            const caseToClassMap = {
+                "select-profile": "profiles",
+                "select-network": "networks",
+                "create-network": "create-network",
+                "view-access": "accesses",
+                "create-access": "create-access"
+            };
+            detailPanel.classList.add(caseToClassMap[key]);
+            }
+        });
+    });
+
+    //updateMermaid(useCaseConfig['select-profile'].diagram); // scommenta se vuoi che come primo diagramma venga mostrato quello di default
+
+    async function doRequest(method, endpoint, body = null) {
+      const baseMap = {
+        '/profiles': 'https://example.com/api/profiles',
+        '/networks': 'https://example.com/api/networks',
+        '/accesses': 'https://example.com/api/accesses'
+      };
+      const base = Object.keys(baseMap).find(k => endpoint.startsWith(k));
+      const url = (baseMap[base] || '') + endpoint;
+      document.getElementById('requestLog').textContent = `${method} ${url}\n${body || ''}`;
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: method === 'GET' ? null : body
+        });
+        const text = await res.text();
+        try {
+          document.getElementById('responseLog').textContent = JSON.stringify(JSON.parse(text), null, 2);
+        } catch {
+          document.getElementById('responseLog').textContent = text;
+        }
+      } catch (err) {
+        document.getElementById('responseLog').textContent = "Error: " + err;
+      }
+    }
+  </script>
+</body>
+</html>
