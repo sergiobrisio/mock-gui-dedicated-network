@@ -1,0 +1,630 @@
+<!-- FullCalendar HTML updated with script logic -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dedicated Network API – Business Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background:#f4f4f4;
+      padding:10px;
+      border-bottom:1px solid #ccc;
+      text-align:center;
+    }
+    #top-block, #new-third-row {
+      display:flex;
+      flex-wrap:nowrap;
+      background:#eef3f8;
+      border-bottom:1px solid #ccc;
+    }
+    .col-left {
+      flex: 0 0 35%;
+      padding: 20px;
+      box-sizing: border-box;
+      border-right: 1px solid #ddd;
+    }
+    .col-middle {
+      flex: 0 0 25%;
+      padding: 20px;
+      box-sizing: border-box;
+      border-right: 1px solid #ddd;
+    }
+    .col-right {
+      flex: 0 0 40%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .fc {
+      font-size: 11px;
+    }
+
+    .fc-toolbar-title {
+      font-size: 13px;
+    }
+
+    .fc .fc-button {
+    font-size: 11px;
+    padding: 2px 6px;
+    }
+
+    .fc .fc-daygrid-day-top {
+    font-size: 10px;
+    }
+
+    .fc .fc-daygrid-event {
+    font-size: 10px;
+    padding: 0 2px;
+    }
+    @media(max-width:767px){
+      #top-block, #new-third-row {
+        flex-wrap: wrap;
+      }
+      .col-left, .col-middle, .col-right {
+        flex: 1 1 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+      }
+    }
+
+    /* ====== BUSINESS VALUE ====== */
+    #business-value h2{margin:0 0 10px;font-size:18px;}
+    #business-value ul{margin:10px 0;padding-left:20px;font-size:14px;}
+    #business-value ul li{margin:4px 0;}
+
+    /* ====== SCENARIO SELECTION ====== */
+    .scenario-tabs{display:flex;flex-direction:column;gap:10px;width:100%;}
+    .scenario-tabs button{background:none;border:1px solid #007acc;padding:10px;border-radius:4px;font-size:14px;cursor:pointer;transition:background .2s;width:100%;}
+    .scenario-tabs button.active{background:#007acc;color:#fff;}
+    #scenario-subtitle{margin-top:15px;font-size:14px;text-align:center;color:#333;}
+
+    /* ====== IMAGE COLUMN ====== */
+    #scenario-svg-container object, .image-placeholder {
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      display:block;
+    }
+    
+    #scenario-svg-container svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .image-placeholder{
+      width:100%;
+      height:100%;
+      background:#ddd;
+      border-radius:4px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      color:#666;
+    }
+    #mermaid-container {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      overflow: auto;
+    }
+    #mermaid-diagram {
+      width: 100%;
+      max-width: 1000px;
+    }
+    #calendar {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dedicated Network API – Business Demo</h1>
+  </header>
+
+  <div id="top-block">
+    <section id="business-value" class="col-left">
+      <h2>Why Dedicated Networks?</h2>
+      <ul>
+        <li><strong>Guaranteed Performance:</strong> dedicated bandwidth & QoS per device.</li>
+        <li><strong>On‑Demand Provisioning:</strong> REST APIs to spin up networks in seconds.</li>
+        <li><strong>Geographic Flexibility:</strong> configure service area/time for events or sites.</li>
+        <li><strong>Security & Isolation:</strong> traffic separated from public networks, SLA‑backed.</li>
+      </ul>
+        <p style="font-size:14px;">
+        Explore the usage scenarios retrieving network profiles:<br>
+        <button id="show-intermediate" style="margin-top:6px;padding:4px 10px;font-size:12px;border:1px solid #007acc;background:#007acc;color:white;border-radius:4px;cursor:pointer;">Show Sequence</button>
+        <button id="hide-intermediate" style="margin-top:6px;padding:4px 10px;font-size:12px;border:1px solid #aaa;background:#ccc;color:black;border-radius:4px;cursor:pointer;display:none;">Hide Sequence</button>
+        </p>
+    </section>
+
+    <div id="scenario-selection" class="col-middle">
+      <div class="scenario-tabs">
+        <button data-scenario="media" class="active">Media Production</button>
+        <button data-scenario="festival">Festival</button>
+        <button data-scenario="enterprise">Enterprise</button>
+      </div>
+      <div id="scenario-subtitle">Stable connectivity for multiple video crews; only live camera streams get high QoS, others remain on standby.</div>
+    </div>
+
+    <div id="scenario-image" class="col-right">
+      <div id="scenario-svg-container" class="image-placeholder">Image Placeholder</div>
+    </div>
+  </div>
+
+<div id="mermaid-intermediate" style="margin: 40px 0;"></div>
+
+<div id="network-selection-start" style="background:#eef3f8; padding: 16px 20px; border-bottom:1px solid #ccc;">
+  <p style="font-size:12.5px; max-width:800px; margin: 0 auto; text-align:center;">
+    Now that you've explored the available network profiles, select your dedicated network by defining <br> the geographic area, the required SLA and the time window.
+  </p>
+</div>
+
+  <div id="new-third-row">
+    <div id="geo-selector" class="col-left">
+        <label for="geo-selector" style="font-weight:bold;font-size:15px;display:block;margin-bottom:4px;">Choose Network Profile Area:</label>
+        <div id="map-controls" style="margin-bottom:10px;">
+            <button onclick="selectMap('all')">Show All Areas</button>
+            <button onclick="selectMap('north')">Area 1</button>
+            <button onclick="selectMap('central')">Area 2</button>
+            <button onclick="selectMap('south')">Area 3</button>
+        </div>
+    <img id="map-image" src="map_all_areas.png" alt="GIS Mock Map" style="width:100%; border-radius:4px; border:1px solid #ccc;" />
+    </div>
+    <div id="sla-selector" class="col-middle">
+    <label for="profile-select" style="font-weight:bold;font-size:15px;display:block;margin-bottom:4px;">Choose Network Profile SLA:</label>
+    <select id="profile-select" style="width:100%;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;"></select>
+        <table id="profile-table" style="width:100%;margin-top:8px;font-size:11px;border-collapse:collapse;">
+            <thead>
+            <tr><th style="text-align:left;padding-bottom:4px;">Parameter</th><th style="text-align:left;padding-bottom:4px;">Value</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="time-selector" class="col-right">
+      <label for="time-selector" style="font-weight:bold;font-size:15px;display:block;margin-bottom:4px;">Choose Network Profile Time:</label>
+      <div id="calendar"></div>
+    </div>
+  </div>
+
+  <div id="network-action-section" style="background:#eef3f8; padding: 16px 20px; border-top:1px solid #ccc; text-align:center;">
+  <p style="font-size:12.5px; max-width:800px; margin: 0 auto 10px;">
+    When you're ready, view the dedicated network setup and continue to the technical walkthrough.
+  </p>
+  <button id="toggle-final-diagram" style="margin:6px 6px 12px;padding:6px 12px;font-size:12px;border:1px solid #007acc;background:#007acc;color:white;border-radius:4px;cursor:pointer;">
+    Hide Dedicated Network Sequence
+  </button>
+  <button id="go-to-tech" onclick="location.href='Tech_Page.html'" style="margin:6px;padding:6px 12px;font-size:12px;border:1px solid #28a745;background:#28a745;color:white;border-radius:4px;cursor:pointer;">
+    Go to Technical View
+  </button>
+</div>
+
+  <div id="mermaid-container">
+    <div class="mermaid" id="mermaid-diagram"></div>
+  </div>
+
+<script>
+  const intermediateDiagram = `sequenceDiagram
+    participant App as API Consumer (Application)
+    participant P as Profiles API
+    participant A as Accesses API
+    participant Network as Physical Network
+    participant D as Device(s)
+
+    Note over App,D: Pre-requisites completed
+
+    rect lightgrey
+        Network <<-->> P: Provisioning / configuration as needed<br> Managed by Network Provider<br>  Outside scope of the Dedicated Network APIs
+    end
+
+    rect lightcyan
+        note right of App: Selection of Profile needed for Dedicated Network
+        App->>P: GET /profiles
+        P->>App: 200 OK Profiles [profileId: media_standard, ...]
+    end`;
+
+  const btnShow = document.getElementById('show-intermediate');
+  const btnHide = document.getElementById('hide-intermediate');
+
+  btnShow.addEventListener('click', () => {
+    const current = document.getElementById('mermaid-intermediate');
+    const newDiv = document.createElement('div');
+    newDiv.id = 'mermaid-intermediate';
+    newDiv.className = 'mermaid';
+    newDiv.style.margin = '40px 0';
+    newDiv.textContent = intermediateDiagram;
+    current.replaceWith(newDiv);
+    mermaid.init(undefined, newDiv);
+    document.getElementById('network-selection-start').scrollIntoView({ behavior: 'smooth' });
+    btnShow.style.display = 'none';
+    btnHide.style.display = 'inline-block';
+  });
+
+  btnHide.addEventListener('click', () => {
+    const current = document.getElementById('mermaid-intermediate');
+    const placeholder = document.createElement('div');
+    placeholder.id = 'mermaid-intermediate';
+    placeholder.style.margin = '40px 0';
+    current.replaceWith(placeholder);
+    document.getElementById('network-selection-start').scrollIntoView({ behavior: 'smooth' });
+    btnHide.style.display = 'none';
+    btnShow.style.display = 'inline-block';
+  });
+</script>
+
+  <script>
+    function selectMap(area) {
+        const mapImage = document.getElementById('map-image');
+        if (area === 'north') {
+        mapImage.src = 'map_north_area.png';
+        } else if (area === 'central') {
+        mapImage.src = 'map_central_area.png';
+        } else if (area === 'south') {
+        mapImage.src = 'map_south_area.png';
+        } else {
+        mapImage.src = 'map_all_areas.png';
+        }
+    }
+  </script>
+    <script>
+    const profilesPerScenario = {
+        media: [
+        {
+            id: 'media_standard',
+            maxNumberOfDevices: 10,
+            aggregatedDlThroughput: { value: 500, unit: 'Mbps' },
+            aggregatedUlThroughput: { value: 200, unit: 'Mbps' },
+            qosProfiles: ['gold', 'silver'],
+            defaultQosProfile: 'gold'
+        },
+        {
+            id: 'media_premium',
+            maxNumberOfDevices: 20,
+            aggregatedDlThroughput: { value: 1000, unit: 'Mbps' },
+            aggregatedUlThroughput: { value: 500, unit: 'Mbps' },
+            qosProfiles: ['platinum', 'gold'],
+            defaultQosProfile: 'platinum'
+        }
+        ],
+        festival: [
+        {
+            id: 'festival_standard',
+            maxNumberOfDevices: 50,
+            aggregatedDlThroughput: { value: 200, unit: 'Mbps' },
+            aggregatedUlThroughput: { value: 100, unit: 'Mbps' },
+            qosProfiles: ['silver'],
+            defaultQosProfile: 'silver'
+        },
+        {
+            id: 'festival_plus',
+            maxNumberOfDevices: 100,
+            aggregatedDlThroughput: { value: 500, unit: 'Mbps' },
+            aggregatedUlThroughput: { value: 300, unit: 'Mbps' },
+            qosProfiles: ['gold', 'silver'],
+            defaultQosProfile: 'gold'
+        }
+        ],
+        enterprise: [
+        {
+            id: 'enterprise_business',
+            maxNumberOfDevices: 20,
+            aggregatedDlThroughput: { value: 300, unit: 'Mbps' },
+            aggregatedUlThroughput: { value: 150, unit: 'Mbps' },
+            qosProfiles: ['gold'],
+            defaultQosProfile: 'gold'
+        },
+        {
+            id: 'enterprise_premium',
+            maxNumberOfDevices: 40,
+            aggregatedDlThroughput: { value: 800, unit: 'Mbps' },
+            aggregatedUlThroughput: { value: 400, unit: 'Mbps' },
+            qosProfiles: ['platinum', 'gold'],
+            defaultQosProfile: 'platinum'
+        }
+        ]
+    };
+
+    function updateProfileSelector(scenario) {
+        const sel = document.getElementById('profile-select');
+        const tbody = document.querySelector('#profile-table tbody');
+        if (!sel || !tbody || !profilesPerScenario[scenario]) return;
+
+        sel.innerHTML = '';
+        profilesPerScenario[scenario].forEach((p, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.text = p.id;
+        sel.add(opt);
+        });
+        sel.selectedIndex = 0;
+        sel.dispatchEvent(new Event('change'));
+    }
+
+    document.getElementById('profile-select').addEventListener('change', e => {
+        const scenario = document.querySelector('.scenario-tabs button.active').dataset.scenario;
+        const prof = profilesPerScenario[scenario][e.target.value];
+        const tbody = document.querySelector('#profile-table tbody');
+        tbody.innerHTML = '';
+        [
+        ['Max Devices', prof.maxNumberOfDevices],
+        ['DL Throughput', prof.aggregatedDlThroughput.value + ' ' + prof.aggregatedDlThroughput.unit],
+        ['UL Throughput', prof.aggregatedUlThroughput.value + ' ' + prof.aggregatedUlThroughput.unit],
+        ['QoS Profiles', prof.qosProfiles.join(', ')],
+        ['Default QoS', prof.defaultQosProfile]
+        ].forEach(([label, val]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td style="padding:2px 4px;">${label}</td><td style="padding:2px 4px;">${val}</td>`;
+        tbody.appendChild(tr);
+        });
+    });
+
+    // Estende il comportamento del cambio scenario
+    document.querySelectorAll('.scenario-tabs button').forEach(btn => {
+        btn.addEventListener('click', () => {
+        const scenario = btn.dataset.scenario;
+        updateProfileSelector(scenario);
+        });
+    });
+
+    // Inizializza con media di default
+    updateProfileSelector('media');
+    </script>
+
+<script>
+  const calendarEl = document.getElementById('calendar');
+  let calendar;
+
+  const bookings = {
+    media: [
+      { start: '2025-07-15', end: '2025-07-18' },
+      { start: '2025-07-22', end: '2025-07-25' }
+    ],
+    festival: [
+      { start: '2025-07-18', end: '2025-07-21' },
+      { start: '2025-07-25', end: '2025-07-28' }
+    ],
+    enterprise: [
+      { start: '2025-07-14', end: '2025-07-17' },
+      { start: '2025-07-21', end: '2025-07-25' }
+    ]
+  };
+
+  function renderCalendar(scenario) {
+    if (calendar) calendar.destroy();
+
+    const bookedEvents = bookings[scenario].map(b => ({
+      start: b.start,
+      end: b.end,
+      display: 'background',
+      color: 'red'
+    }));
+
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      height: 300,
+      selectable: true,
+      events: bookedEvents,
+      select: function(info) {
+        const selectedStart = new Date(info.startStr);
+        const selectedEnd = new Date(info.endStr);
+
+        const hasOverlap = bookings[scenario].some(slot => {
+          const slotStart = new Date(slot.start);
+          const slotEnd = new Date(slot.end);
+          return selectedStart < slotEnd && selectedEnd > slotStart;
+        });
+
+        if (hasOverlap) {
+          alert('Slot overlap with existing booking request.');
+        } else {
+          calendar.addEvent({
+            title: 'Booking request',
+            start: info.startStr,
+            end: info.endStr,
+            color: 'green'
+          });
+        }
+
+        calendar.unselect();
+      }
+    });
+
+    calendar.render();
+  }
+
+  // Esempio: scenario iniziale
+  renderCalendar('media');
+</script>
+<script>
+
+    const scenarios = {
+      media: {
+        subtitle: 'Stable connectivity for multiple video crews; only live camera streams get high QoS, others remain on standby.',
+        svg: 'Scenario_MediaProduction.svg',
+        diagram: `sequenceDiagram
+    participant App as API Consumer (Application)
+    participant P as Profiles API
+    participant A as Accesses API
+    participant Network as Physical Network
+    participant D as Device(s)
+
+    Note over App,D: Pre-requisites completed
+    rect lightgrey
+         Network <<-->> P: Provisioning / configuration of all Dedicated Networks as needed<br> Managed by API Provider and Network Provider<br>  Outside scope of the Dedicated Network APIs
+    end
+    rect lightcyan
+        note right of App: Creation of a Dedicated Network
+        App->>Network: GET /networks
+        Network-->>App: 200 OK (networkId, status=ACTIVATED)
+        App->>Network: GET /networks/{NetworkId}
+        Network-->>App: 200 OK (networkId, status=ACTIVATED)
+        App->>Network: POST /networks (profileId, serviceArea, serviceTime, ...)
+        Network->>App: 201 ACCEPTED (networkId, status=REQUESTED)
+
+        alt Callback enabled
+            Network-->>App: Optional callback: (networkId, status=RESERVED)
+            Network-->>App: Optional callback: (networkId, status=ACTIVATED)
+        else Polling
+            App->>Network: GET /networks/{networkId}
+            Network-->>App: 200 OK (networkId, status=ACTIVATED)
+        end
+    end`
+      },
+      festival: {
+        subtitle: 'Dedicated network for payment systems and CCTV, with QoS profiles optimized for matrix vs single view.',
+        svg: 'Scenario_Festival.svg',
+        diagram: `sequenceDiagram\nUser->>API: GET /networks?scenario=festival\nAPI-->>Backend: Request network for festival\nBackend-->>API: Network created\nAPI-->>User: 200 OK`
+      },
+      enterprise: {
+        subtitle: 'Secure access to corporate services, adaptive QoS for video conferencing.',
+        svg: null,
+        diagram: `sequenceDiagram
+    participant App as API Consumer (Application)
+    participant P as Profiles API
+    participant N as Networks API
+    participant A as Accesses API
+    participant Network as Physical Network
+    participant D as Device(s)
+
+    Note over App,D: Pre-requisites completed
+
+    rect lightcyan
+        note right of App: Selection of Profile needed for Dedicated Network
+        App->>P: GET /profiles
+        P->>App: 200 OK Profiles [profileId, ...]
+    end
+
+    rect lightcyan
+        note right of App: Creation of a Dedicated Network
+        App->>N: POST /networks (profileId, serviceArea, serviceTime, ...)
+        N->>App: 201 ACCEPTED (networkId, status=REQUESTED)
+
+
+         N <<-->> Network: Provisioning / configuration as needed<br> Managed by API Provider and Network Provider<br>  Outside scope of the Dedicated Network APIs
+        alt Callback enabled
+            N-->>App: Optional callback: (networkId, status=RESERVED)
+            N-->>App: Optional callback: (networkId, status=ACTIVATED)
+        else Polling
+            App->>N: GET /networks/{networkId}
+            N-->>App: 200 OK (networkId, status=ACTIVATED)
+        end
+    end
+
+    rect lightcyan
+        note right of App: Dedicated Network Accesses API
+        loop Create Access resource for a given device to the given network
+            App->>A: POST /accesses (networkId, device)
+            A->>App: 200 OK Access created (accessId)
+        end
+
+        A <<-->> Network: Provisioning / configuration as needed<br> Managed by API Provider and Network Provider<br>  Outside scope of the Dedicated Network APIs
+
+        loop Delete a previously created Access resource
+            App->>A: DELETE /accesses (accessId)
+            A->>App: 200 OK Access deleted
+        end
+    end
+
+
+    Note over App,D: While Dedicated Network in ACTIVATED state
+
+    loop One or more devices
+        D-->>Network: Connect to network
+        Network-->>D: Connection established / denied
+    end`
+      }
+    };
+
+    mermaid.initialize({ startOnLoad: false });
+    const diagramDiv = document.getElementById('mermaid-diagram');
+    const imgContainer = document.getElementById('scenario-svg-container');
+
+    function renderMermaid(md) {
+      diagramDiv.removeAttribute('data-processed');
+      diagramDiv.textContent = md;
+      mermaid.init(undefined, diagramDiv);
+    }
+
+    function loadSVG(path) {
+      const obj = document.createElement('object');
+      obj.type = 'image/svg+xml';
+      obj.data = path;
+      obj.style.width = '100%';
+      obj.style.height = '100%';
+      obj.style.objectFit = 'contain';
+      return obj;
+    }
+
+    function updateImage(s) {
+      imgContainer.innerHTML = '';
+      if (s.svg) {
+        imgContainer.appendChild(loadSVG(s.svg));
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'image-placeholder';
+        ph.textContent = 'Image Placeholder';
+        imgContainer.appendChild(ph);
+      }
+    }
+
+    document.querySelectorAll('.scenario-tabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.scenario-tabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.scenario;
+        const s = scenarios[key];
+        document.getElementById('scenario-subtitle').textContent = s.subtitle;
+        renderMermaid(s.diagram);
+        updateImage(s);
+        renderCalendar(key);
+      });
+    });
+
+    renderMermaid(scenarios.media.diagram);
+    updateImage(scenarios.media);
+    renderCalendar('media');
+  </script>
+
+  <script>
+  let finalDiagramVisible = false;
+
+  document.getElementById('toggle-final-diagram').addEventListener('click', () => {
+    const container = document.getElementById('mermaid-diagram');
+    container.innerHTML = '';
+    container.classList.remove('mermaid');
+
+    if (!finalDiagramVisible) {
+      container.textContent = finalDiagram;
+      container.classList.add('mermaid');
+      mermaid.init(undefined, container);
+      document.getElementById('toggle-final-diagram').textContent = 'Hide Dedicated Network Sequence';
+    } else {
+      document.getElementById('toggle-final-diagram').textContent = 'Hide Dedicated Network Sequence';
+    }
+
+    finalDiagramVisible = !finalDiagramVisible;
+  });
+</script>
+
+</body>
+</html>

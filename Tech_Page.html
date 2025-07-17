@@ -353,11 +353,10 @@
 
     async function doRequest(method, endpoint, body = null) {
       const baseMap = {
-        '/profiles': 'https://camara-dedicated-network.onrender.com/dedicated-network-profiles/vwip',
-        '/networks': 'https://camara-dedicated-network.onrender.com/dedicated-network/vwip',
-        '/accesses': 'https://camara-dedicated-network.onrender.com/dedicated-network-accesses/vwip'
+        '/profiles': 'https://example.com/api/profiles',
+        '/networks': 'https://example.com/api/networks',
+        '/accesses': 'https://example.com/api/accesses'
       };
-
       const base = Object.keys(baseMap).find(k => endpoint.startsWith(k));
       const url = (baseMap[base] || '') + endpoint;
       document.getElementById('requestLog').textContent = `${method} ${url}\n${body || ''}`;
